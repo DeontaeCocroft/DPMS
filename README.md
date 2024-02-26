@@ -1,4 +1,5 @@
-This is my Dental Practice Management System I created using Java Swing, Java, and PostgreSQL. All code is in this repo.
+This is my Dental Practice Management System I created using Java Swing, Java, and PostgreSQL. All code is in this repo. There is also a YouTube video that shows how the program works.
+
 A Brief explanation of how it works.
 
 Login Screen
