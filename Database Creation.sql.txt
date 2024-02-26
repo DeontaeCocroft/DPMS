@@ -1,0 +1,217 @@
+CREATE TABLE Login(
+	LoginID SERIAL PRIMARY KEY NOT NULL,
+	Username VARCHAR(255) NOT NULL,
+	Password VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE Receptionist(
+	ReceptionistID SERIAL PRIMARY KEY NOT NULL,
+	FirstName VARCHAR(255) NOT NULL,
+	LastName VARCHAR(255) NOT NULL,
+	PhoneNumber BIGINT NOT NULL 
+);
+
+CREATE TABLE Dentist(
+	DentistID SERIAL PRIMARY KEY NOT NULL,
+	FirstName VARCHAR(255) NOT NULL,
+	LastName VARCHAR(255) NOT NULL,
+	PhoneNumber BIGINT NOT NULL
+);
+
+CREATE TABLE DentalHygienist(
+	DentalHygienistID SERIAL PRIMARY KEY NOT NULL,
+	FirstName VARCHAR(255) NOT NULL,
+	LastName VARCHAR(255) NOT NULL,
+	PhoneNumber BIGINT NOT NULL
+);
+
+CREATE TABLE DentalAssistant(
+	DentalAssistantID SERIAL PRIMARY KEY NOT NULL,
+	FirstName VARCHAR(255) NOT NULL,
+	LastName VARCHAR(255) NOT NULL,
+	PhoneNumber BIGINT NOT NULL
+);
+
+CREATE TABLE DentalSurgeon(
+	DentalSurgeonID SERIAL PRIMARY KEY NOT NULL,
+	FirstName VARCHAR(255) NOT NULL,
+	LastName VARCHAR(255) NOT NULL,
+	PhoneNumber BIGINT NOT NULL
+);
+
+CREATE TABLE Patient(
+	PatientID SERIAL PRIMARY KEY NOT NULL,
+	FirstName VARCHAR(255) NOT NULL,
+	LastName VARCHAR(255) NOT NULL,
+	DOB DATE NOT NULL,
+	Gender VARCHAR(2),
+	Address VARCHAR(255) NOT NULL,
+	City VARCHAR(255) NOT NULL,
+	State VARCHAR(255) NOT NULL,
+	ZipCode BIGINT NOT NULL,
+	Insurance VARCHAR(255),
+	InsuranceNumber BIGINT,
+	Notes VARCHAR(2000),
+	XrayImages VARCHAR(255)
+);
+
+CREATE TABLE Prescription(
+	PrescriptionID SERIAL PRIMARY KEY NOT NULL,
+	Name VARCHAR(255) NOT NULL,
+	Notes VARCHAR(2000) NOT NULL,
+	Price MONEY NOT NULL,
+	ItemsInStock INT NOT NULL
+);
+
+CREATE TABLE PrescriptionBillInfo(
+	PrescriptionBillInfoID SERIAL PRIMARY KEY NOT NULL,
+	PatientID INT,
+	PrescriptionID INT,
+	Quantity INT NOT NULL,
+	FOREIGN KEY (PrescriptionID) REFERENCES Prescription(PrescriptionID),
+	FOREIGN KEY (PatientID) REFERENCES Patient(PatientID)
+	
+);
+
+CREATE TABLE Procedure(
+	ProcedureID SERIAL PRIMARY KEY NOT NULL,
+	Name VARCHAR(255) NOT NULL,
+	Notes VARCHAR(2000) NOT NULL,
+	Price MONEY NOT NULL
+);
+
+CREATE TABLE Appointment(
+	AppointmentID  SERIAL PRIMARY KEY NOT NULL,
+	PatientID INT NOT NULL,
+	ProcedureID INT,
+	ProcedureOccurrences INT,
+	DentistID INT,
+	DentalHygienistID INT,
+	DentalAssistantID INT,
+	DentalSurgeonID INT,
+	AppointmentDate DATE NOT NULL,
+	AppointmentTime TIME NOT NULL,
+	Notes VARCHAR(2000),
+	Canceled BOOLEAN,
+	FOREIGN KEY (PatientID) REFERENCES Patient(PatientID),
+	FOREIGN KEY (ProcedureID) REFERENCES Procedure(ProcedureID),
+	FOREIGN KEY (DentistID) REFERENCES Dentist(DentistID),
+	FOREIGN KEY (DentalHygienistID) REFERENCES DentalHygienist(DentalHygienistID),
+	FOREIGN KEY (DentalAssistantID) REFERENCES DentalAssistant(DentalAssistantID),
+	FOREIGN KEY (DentalSurgeonID) REFERENCES DentalSurgeon(DentalSurgeonID)
+);
+
+CREATE TABLE Bill(
+	BillID SERIAL PRIMARY KEY NOT NULL,
+	AppointmentID INT,
+	IsPaid BOOLEAN NOT NULL,
+	Notes VARCHAR(2000),
+	FOREIGN KEY (AppointmentID) REFERENCES Appointment(AppointmentID)
+);
+
+INSERT INTO DentalAssistant (FirstName, LastName, PhoneNumber)
+Values	('William', 'Ramirez', '7085558901'),
+	('Ethan', 'Cooper', '7085557891'),
+    	('Isabella', 'Price', '7085558902');
+
+INSERT INTO DentalHygienist (FirstName, LastName, PhoneNumber)
+Values  ('Sophia', 'Anderson', '7085551234'),
+   	('Liam', 'Campbell', '7085552345'),
+    	('Olivia', 'Martinez', '7085553456');
+
+INSERT INTO DentalSurgeon (FirstName, LastName, PhoneNumber)
+Values	('James', 'Nelson', '7085550123');
+
+INSERT INTO Dentist (FirstName, LastName, PhoneNumber)
+Values	('Elijah', 'Harris', '7085556789'),
+	('Mia', 'King', '7085559012');
+	
+INSERT INTO Receptionist (FirstName, LastName, PhoneNumber)
+Values	('Lucas', 'Bennett', '7085551236'),
+    	('Chloe', 'Carter', '7085552347'),
+   	('Jackson', 'Parker', '7085553458');
+
+INSERT INTO Patient(FirstName, LastName, DOB, Gender, Address, City, State, ZipCode, Insurance, InsuranceNumber)
+VALUES	('Emily', 'Johnson', '1987-05-12', 'F', '123 Oak Street', 'Chicago', 'IL', '60601', 'Guardian', '708555123'),
+    	('Michael', 'Brown', '1992-09-25', 'M', '456 Maple Avenue', 'Evanston', 'IL', '60201', 'Delta Dental', '708555234'),
+    	('Sarah', 'Williams', '1985-03-18', 'F', '789 Elm Street', 'Oak Park', 'IL', '60302', 'Blue Cross', '708555345'),
+    	('Christopher', 'Patel', '2009-01-30', 'M', '2020 Walnut Drive', 'Evanston', 'IL', '60202', 'Aetna', '708555456'),
+   	('Samantha', 'Nguyen', '1983-07-29', 'F', '1212 Cedar Lane', 'Chicago', 'IL', '60618', 'Cigna', '708555567'),
+    	('William', 'Rodriguez', '1978-12-15', 'M', '1414 Birch Avenue', 'Cicero', 'IL', '60804', 'MetLife Dental', '708555678'),
+   	('Olivia', 'Martinez', '1989-06-03', 'F', '1616 Pine Street', 'Berwyn', 'IL', '60402', 'Guardian', '708555789'),
+    	('Ethan', 'Garcia', '1980-04-17', 'M', '1818 Oak Avenue', 'Chicago', 'IL', '60610', 'Delta Dental', '708555890'),
+    	('Ava', 'Patel', '1995-01-30', 'F', '2020 Walnut Drive', 'Evanston', 'IL', '60202', 'Blue Cross', '708555901'),
+    	('Noah', 'Kim', '1986-08-22', 'M', '2222 Cherry Lane', 'Oak Park', 'IL', '60301', 'Aetna', '708555012');
+
+
+INSERT INTO Login (username, password)
+VALUES	('wRamirez729', 'P@ssw0rd123!'),
+	('eCooper415', 'SecurePass456$'),
+	('iPrice821', 'StrongPwd789*'),
+	('sAnderson203', 'SafePassword101%'),
+	('lCampbell544', 'Access1234#'),
+	('oMartinez697', 'SecretPass567&'),
+	('jNelson808', 'HiddenPwd333#'),
+	('eHarris927', 'ProtectedPwd999$'),
+	('mKing652', 'StrongPass777*'),
+	('lBennett419', 'SecurePwd246#'),
+	('cCarter821', 'PrivatePass888&'),
+	('jParker385', 'Confidential123@'),
+	('Admin', 'test1234');
+
+INSERT INTO Prescription (Name, Notes, Price, ItemsInStock)
+VALUES	('Fluoride Rinse', 'Recommended for daily use to strengthen tooth enamel and prevent cavities.', 15, 50),
+	('Antimicrobial Mouthwash', 'Used to reduce bacteria and inflammation in the mouth, especially for patients with gum disease.', 20, 30),
+	('Tooth Desensitizer Gel', 'Applied to sensitive teeth to provide relief from pain triggered by hot, cold, or sweet foods and drinks.', 25, 20),
+	('Oral Antibiotic Tablets', 'Prescribed for the treatment of severe dental infections or abscesses.', 30, 10),
+	('Prescription Strength Fluoride Toothpaste', 'High concentration fluoride toothpaste for patients with high risk of cavities or tooth decay.', 18, 40),
+	('Oral Analgesic Solution', 'Liquid pain reliever for temporary relief of toothache or mouth soreness.', 12, 15),
+	('Oral Anti-inflammatory Tablets', 'Prescribed to reduce inflammation and pain associated with dental procedures or conditions.', 35, 25),
+	('Oral Anti-fungal Rinse', 'Used to treat fungal infections in the mouth, such as oral thrush.', 22, 20),
+	('Prescription Dental Floss', 'Specialized dental floss for patients with tight spaces between teeth or orthodontic appliances.', 8, 60),
+	('Oral Antiseptic Spray', 'Spray to disinfect and soothe oral tissues, especially after oral surgery or trauma.', 28, 20);
+
+INSERT INTO Procedure (Name, notes, price)
+VALUES 	('Dental Cleaning (Prophylaxis)', 'Routine dental cleaning to remove plaque, tartar, and stains from the teeth. It helps prevent cavities and gum disease.', 150),
+	('Dental Filling (Composite)', 'Restoration of a decayed or damaged tooth using tooth-colored composite resin material.', 300),
+	('Dental Crown (Porcelain or Ceramic)', 'Restoration of a badly damaged or decayed tooth by covering it with a tooth-shaped cap.', 1000),
+	('Root Canal Therapy', 'Treatment to remove infected or damaged pulp from inside the tooth and seal it to save the tooth.', 1200),
+	('Tooth Extraction', 'Removal of a severely damaged, decayed, or impacted tooth.', 200),
+	('Dental Implant', 'Surgical placement of an artificial tooth root into the jawbone to support a dental prosthesis.', 4000),
+	('Dental Bridge', 'Replacement of one or more missing teeth by anchoring artificial teeth to adjacent natural teeth or implants.', 2000),
+	('Teeth Whitening (In-office)', 'Professional teeth whitening procedure performed in the dental office using bleaching agents.', 700),
+	('Periodontal Surgery (Gum Surgery)', 'Surgical treatment for severe gum disease to remove infected tissue and reshape the gums.', 1500);
+
+INSERT INTO PrescriptionBillInfo (PatientID, PrescriptionID, Quantity)
+VALUES	('1','1','1'),
+	('3','1','1'),
+	('10','5','2');
+
+INSERT INTO Appointment (PatientID, ProcedureID, ProcedureOccurrences, DentistID, DentalHygienistID, DentalAssistantID, AppointmentDate, AppointmentTime, Notes)
+VALUES	('1','1','1','1','1','1','2-1-2024','9:00am','Teeth More Prone to Cavities. Needs Prescription 1.'),
+	('3','1','1','2','2','2','2-1-2024','10:00am','Teeth More Prone to Cavities. Needs Prescription 1.'),
+	('10','1','1','1','3','3','2-1-2024','10:30am','Teeth Very Prone to Cavities. Needs Prescription 5(2).');
+
+
+INSERT INTO Appointment (PatientID, ProcedureID, ProcedureOccurrences, DentistID, DentalHygienistID, DentalAssistantID, AppointmentDate, AppointmentTime)
+VALUES	('2','1','1','2','1','1','2-1-2024','11:00am'),
+	('4','1','1','1','2','2','2-1-2024','11:30am'),
+	('5','1','1','2','3','3','2-1-2024','12:00pm'),
+	('6','1','1','1','1','1','2-1-2024','12:30pm'),
+	('7','1','1','2','2','2','2-1-2024','1:00pm');
+		
+INSERT INTO Appointment (PatientID, ProcedureID, ProcedureOccurrences, DentistID, DentalHygienistID, DentalAssistantID, DentalSurgeonID, AppointmentDate, AppointmentTime, Notes)
+VALUES	('8','9','1','1','1','1','1','2-2-2024','9:00am','Extremely Infected Gums, Patient went under Periodontal Gum Surgery'),
+	('9','9','1','2','2','2','1','2-2-2024','11:00am','Extremely Infected Gums, Patient went under Periodontal Gum Surgery');
+
+INSERT INTO Bill(AppointmentID, IsPaid)
+VALUES	('1','y'),
+	('2','y'),
+	('3','y'),
+	('4','y'),
+	('5','y'),
+	('6','y'),
+	('7','y'),
+	('8','y'),
+	('9','y'),
+	('10','y');
