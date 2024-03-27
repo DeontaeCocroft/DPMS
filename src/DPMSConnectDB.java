@@ -11,8 +11,7 @@ public class DPMSConnectDB{
 		Connection connection = null;
 		try {
 			Class.forName("org.postgresql.Driver");
-			connection = DriverManager.getConnection("jdbc:postgresql://project-database.cx0s8y2ymcyy.us-east-2.rds.amazonaws.com/DPMS?user=Taec_3&password=Char8305030802$");
-			//connection = DriverManager.getConnection("jdbc:postgresql://localhost/test?user=postgres&password=Char8305");
+			connection = DriverManager.getConnection("jdbc:postgresql://project-database.cx0s8y2ymcyy.us-east-2.rds.amazonaws.com/DPMS?user=?&password=?");
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 			throw new SQLException("Failed to connect to the database.");
