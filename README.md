@@ -3,7 +3,7 @@
 This is my Dental Practice Management System I created using Java Swing, Java, and PostgreSQL, which is connected to AWS. This program allows users to save, delete, and view dental practice information such as patient, appointment, billing, and prescription information. This program is convenient to use and eliminates paperwork or the need to use Excel spreadsheets to store a lot of data.
 
 DEMO
-- Youtube Link (https://www.youtube.com/watch?v=UnaFjA_Xk0c)
+- Youtube Link (https://youtu.be/HPtsfpu4tJU)
 
 
 # Implementation
