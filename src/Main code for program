@@ -191,6 +191,8 @@ public class Billing_Window_GUI {
             ButtonPanelBW.add((IsPaidButtonBW));
             IsPaidButtonBW.setBackground(Color.BLUE);
             IsPaidButtonBW.setForeground(Color.WHITE);
+            IsPaidButtonBW.setBorderPainted(false);
+            IsPaidButtonBW.setOpaque(true);
 
         //Button to create bill pdf/
         JButton billpdfBW = new JButton("Save Bill PDF");
