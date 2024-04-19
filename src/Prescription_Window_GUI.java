@@ -28,7 +28,7 @@ public class Prescription_Window_GUI {
         });
 
         //Icon for Prescription window
-        ImageIcon LogoIcon = new ImageIcon("Images\\prescription.png");
+        ImageIcon LogoIcon = new ImageIcon("Images/prescription.png");
         PrescriptionWindow.setIconImage(LogoIcon.getImage());
 
         //Size of window
@@ -87,7 +87,7 @@ public class Prescription_Window_GUI {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 10);
 
-        String[] Labels = {"*Patient ID (For Save or Search):", "*Prescription ID:", "*Quantity:", "Prescription Bill ID (For Search or Delete):"};
+        String[] Labels = {"*Patient ID (For Save or Search):", "*Prescription ID:", "*Quantity:", "Prescription Bill ID (For Search, Save to PDF, or Delete):"};
 
         JTextField[] Fields = new JTextField[Labels.length];
 
@@ -121,6 +121,22 @@ public class Prescription_Window_GUI {
         ButtonPanelPreW.add(SaveButtonPreW);
         SaveButtonPreW.setBackground(Color.BLUE);
         SaveButtonPreW.setForeground(Color.WHITE);
+        SaveButtonPreW.setBorderPainted(false);
+        SaveButtonPreW.setOpaque(true);
+
+         //Button to clear Prescription Bill info
+         JButton ClearButtonPreW = new JButton("Clear Fields");
+         ClearButtonPreW.addActionListener(new ActionListener() {
+             @Override
+             public void actionPerformed(ActionEvent e) {
+                 Patient_Window.ClearFields(Fields);
+             }
+         });
+         ButtonPanelPreW.add(ClearButtonPreW);
+         ClearButtonPreW.setBackground(Color.BLUE);
+         ClearButtonPreW.setForeground(Color.WHITE);
+         ClearButtonPreW.setBorderPainted(false);
+         ClearButtonPreW.setOpaque(true);
 
         //Button to delete Prescription Bill Info
         JButton DeleteButtonPreW = new JButton("Delete");
@@ -134,6 +150,8 @@ public class Prescription_Window_GUI {
         ButtonPanelPreW.add(DeleteButtonPreW);
         DeleteButtonPreW.setBackground(Color.BLUE);
         DeleteButtonPreW.setForeground(Color.WHITE);
+        DeleteButtonPreW.setBorderPainted(false);
+        DeleteButtonPreW.setOpaque(true);
 
         //Button to search prescription bill
         JButton SearchButtonPreW = new JButton("Search");
@@ -146,18 +164,8 @@ public class Prescription_Window_GUI {
         ButtonPanelPreW.add(SearchButtonPreW);
         SearchButtonPreW.setBackground(Color.BLUE);
         SearchButtonPreW.setForeground(Color.WHITE);
-
-        //Button to clear Prescription Bill info
-        JButton ClearButtonPreW = new JButton("Clear Fields");
-        ClearButtonPreW.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Patient_Window.ClearFields(Fields);
-            }
-        });
-        ButtonPanelPreW.add(ClearButtonPreW);
-        ClearButtonPreW.setBackground(Color.BLUE);
-        ClearButtonPreW.setForeground(Color.WHITE);
+        SearchButtonPreW.setBorderPainted(false);
+        SearchButtonPreW.setOpaque(true);
 
         //Button to patients
         JButton PatientButtonPreW = new JButton("Patients");
@@ -186,7 +194,31 @@ public class Prescription_Window_GUI {
         ButtonPanelPreW.add((PatientButtonPreW));
         PatientButtonPreW.setBackground(Color.BLUE);
         PatientButtonPreW.setForeground(Color.WHITE);
+        PatientButtonPreW.setBorderPainted(false);
+        PatientButtonPreW.setOpaque(true);
 
+         //Button to crate bill pdf/
+         JButton prepdfPreW = new JButton("Save Bill PDF");
+         prepdfPreW.addActionListener(new ActionListener() {
+             @Override
+             public void actionPerformed(ActionEvent e) {
+                 try {
+                     int billID = Integer.parseInt(Fields[3].getText().trim());
+                     Prescription_Window.searchPrescriptionBillsAndCreatePDF(billID, PrescriptionWindow);
+                     Fields[3].setText("");
+                 } catch (NumberFormatException ex) {
+                     JOptionPane.showMessageDialog(PrescriptionWindow, "Please enter a valid integer for Bill ID.",
+                                                   "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                 }
+             }
+         });
+         ButtonPanelPreW.add(prepdfPreW);
+         prepdfPreW.setBackground(Color.BLUE);
+         prepdfPreW.setForeground(Color.WHITE);
+         prepdfPreW.setBorderPainted(false);
+         prepdfPreW.setOpaque(true);
+           
+         
         //Button for Prescription Bill window help
         JButton HelpButtonPW = new JButton("Help");
         HelpButtonPW.addActionListener(new ActionListener() {
@@ -198,6 +230,8 @@ public class Prescription_Window_GUI {
         ButtonPanelPreW.add(HelpButtonPW);
         HelpButtonPW.setBackground(Color.BLUE);
         HelpButtonPW.setForeground(Color.WHITE);
+        HelpButtonPW.setBorderPainted(false);
+        HelpButtonPW.setOpaque(true);
 
         MainPanelPreW.add(ButtonPanelPreW, BorderLayout.SOUTH);
         PrescriptionWindow.add(MainPanelPreW);

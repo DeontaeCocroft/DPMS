@@ -29,7 +29,7 @@ public class Billing_Window_GUI {
         });
 
         //Billing window icon
-        ImageIcon LogoIcon = new ImageIcon("Images\\billing.png"); 
+        ImageIcon LogoIcon = new ImageIcon("Images/billing.png"); 
         BillWindow.setIconImage(LogoIcon.getImage());
 
         // Size of window
@@ -66,7 +66,7 @@ public class Billing_Window_GUI {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 10);
 
-        String[] Labels = {"*Appointment ID (For Save and Search):", "Is Paid (For Save and Mark as Paid):", "Notes:", "Bill ID (For Search, Delete, and Mark as Paid):"};
+        String[] Labels = {"*Appointment ID (For Save and Search):", "Is Paid (For Save and Mark as Paid):", "Notes:", "Bill ID (For Search, Delete, Save as PDF, or Mark as Paid):"};
         JTextField[] Fields = new JTextField[Labels.length];
 
         for (int i = 0; i < Labels.length; i++) {
@@ -99,19 +99,8 @@ public class Billing_Window_GUI {
         ButtonPanelBW.add(SaveButtonBW);
         SaveButtonBW.setBackground(Color.BLUE);
         SaveButtonBW.setForeground(Color.WHITE);
-
-        //Button to delete bill info into database
-        JButton DeleteButtonBW = new JButton("Delete");
-        DeleteButtonBW .addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Billing_Window.DeleteBillInfo(Fields[3].getText(), TableModelB, Fields, BillWindow);
-            }
-        });
-        ButtonPanelBW.add(DeleteButtonBW );
-        DeleteButtonBW .setBackground(Color.BLUE);
-        DeleteButtonBW .setForeground(Color.WHITE);
-
+        SaveButtonBW.setBorderPainted(false);
+        SaveButtonBW.setOpaque(true);
 
         //Button to clear Bill info fields
         JButton ClearButtonBW = new JButton("Clear Fields");
@@ -124,6 +113,23 @@ public class Billing_Window_GUI {
         ButtonPanelBW.add(ClearButtonBW);
         ClearButtonBW.setBackground(Color.BLUE);
         ClearButtonBW.setForeground(Color.WHITE);
+        ClearButtonBW.setBorderPainted(false);
+        ClearButtonBW.setOpaque(true);
+
+        //Button to delete bill info into database
+        JButton DeleteButtonBW = new JButton("Delete");
+        DeleteButtonBW .addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Billing_Window.DeleteBillInfo(Fields[3].getText(), TableModelB, Fields, BillWindow);
+            }
+        });
+        ButtonPanelBW.add(DeleteButtonBW );
+        DeleteButtonBW .setBackground(Color.BLUE);
+        DeleteButtonBW .setForeground(Color.WHITE);
+        DeleteButtonBW.setBorderPainted(false);
+        DeleteButtonBW.setOpaque(true);
+
 
 
         //Button to search Bills
@@ -137,20 +143,10 @@ public class Billing_Window_GUI {
             ButtonPanelBW.add(SearchButtonBW);
             SearchButtonBW.setBackground(Color.BLUE);
             SearchButtonBW.setForeground(Color.WHITE);
+            SearchButtonBW.setBorderPainted(false);
+            SearchButtonBW.setOpaque(true);
 
-        //Button to mark bill as paid or unpaid
-        JButton IsPaidButtonBW = new JButton("Mark As Paid");
-            IsPaidButtonBW.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e){
-                    Billing_Window.MarkIsPaid(TableModelB, Fields, BillWindow);
-                }
-                
-            });
-            ButtonPanelBW.add((IsPaidButtonBW));
-            IsPaidButtonBW.setBackground(Color.BLUE);
-            IsPaidButtonBW.setForeground(Color.WHITE);
-            
+        
            
         //Button to open appointments window
         JButton AppointmentBW = new JButton("Appointments");
@@ -180,6 +176,42 @@ public class Billing_Window_GUI {
             ButtonPanelBW.add((AppointmentBW));
             AppointmentBW.setBackground(Color.BLUE);
             AppointmentBW.setForeground(Color.WHITE);
+            AppointmentBW.setBorderPainted(false);
+            AppointmentBW.setOpaque(true);
+
+        //Button to mark bill as paid or unpaid
+        JButton IsPaidButtonBW = new JButton("Mark As Paid");
+            IsPaidButtonBW.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e){
+                    Billing_Window.MarkIsPaid(TableModelB, Fields, BillWindow);
+                }
+                
+            });
+            ButtonPanelBW.add((IsPaidButtonBW));
+            IsPaidButtonBW.setBackground(Color.BLUE);
+            IsPaidButtonBW.setForeground(Color.WHITE);
+
+        //Button to create bill pdf/
+        JButton billpdfBW = new JButton("Save Bill PDF");
+        billpdfBW.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    int billID = Integer.parseInt(Fields[3].getText().trim());
+                    Billing_Window.searchBillsAndCreatePDF(billID, BillWindow);
+                    Fields[3].setText("");
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "Please enter a valid integer for Bill ID.",
+                                                  "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        ButtonPanelBW.add(billpdfBW);
+        billpdfBW.setBackground(Color.BLUE);
+        billpdfBW.setForeground(Color.WHITE);
+        billpdfBW.setBorderPainted(false);
+        billpdfBW.setOpaque(true);
         
         //Button to display information for help
         JButton HelpButtonBW = new JButton("Help");
@@ -192,6 +224,8 @@ public class Billing_Window_GUI {
             ButtonPanelBW.add((HelpButtonBW));
             HelpButtonBW.setBackground(Color.BLUE);
             HelpButtonBW.setForeground(Color.WHITE);
+            HelpButtonBW.setBorderPainted(false);
+            HelpButtonBW.setOpaque(true);
 
         MainPanelB.add(ButtonPanelBW, BorderLayout.SOUTH);
         BillWindow.add(MainPanelB);

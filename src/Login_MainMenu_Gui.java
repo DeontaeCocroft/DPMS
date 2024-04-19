@@ -26,7 +26,7 @@ public class Login_MainMenu_Gui extends JFrame implements ActionListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
-        ImageIcon LogoIcon = new ImageIcon("Images\\dental-clinic-logo-template-dental-care-logo-designs-tooth-teeth-smile-dentist-logo-vector.png");
+        ImageIcon LogoIcon = new ImageIcon("Images/dental-clinic-logo-template-dental-care-logo-designs-tooth-teeth-smile-dentist-logo-vector.png");
         setIconImage(LogoIcon.getImage());
     }
 
@@ -36,7 +36,7 @@ public class Login_MainMenu_Gui extends JFrame implements ActionListener {
             SwingUtilities.invokeLater(() -> {
                     LoadingScreen = new JDialog();
                     LoadingScreen.setAlwaysOnTop(true);
-                    ImageIcon LogoIcon = new ImageIcon("Images\\dental-clinic-logo-template-dental-care-logo-designs-tooth-teeth-smile-dentist-logo-vector.png");
+                    ImageIcon LogoIcon = new ImageIcon("Images/dental-clinic-logo-template-dental-care-logo-designs-tooth-teeth-smile-dentist-logo-vector.png");
                     JLabel loadingLabel = new JLabel("Please wait...", SwingConstants.CENTER);
                     LoadingScreen.add(loadingLabel);
                     LoadingScreen.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -69,7 +69,7 @@ public class Login_MainMenu_Gui extends JFrame implements ActionListener {
         GBC.gridwidth = 2;
         GBC.insets = new Insets(10, 0, 20, 0);
 
-        ImageIcon LogoIcon = new ImageIcon("Images\\dental-clinic-logo-template-dental-care-logo-designs-tooth-teeth-smile-dentist-logo-vector.png"); 
+        ImageIcon LogoIcon = new ImageIcon("Images/dental-clinic-logo-template-dental-care-logo-designs-tooth-teeth-smile-dentist-logo-vector.png"); 
         JLabel LogoLabel = new JLabel(LogoIcon);
         MainPanelLS.add(LogoLabel, GBC);
 
@@ -116,6 +116,8 @@ public class Login_MainMenu_Gui extends JFrame implements ActionListener {
         LoginButton.addActionListener(this);
         LoginButton.setBackground(Color.BLUE);
         LoginButton.setForeground(Color.WHITE);
+        LoginButton.setBorderPainted(false);
+        LoginButton.setOpaque(true);
         MainPanelLS.add(LoginButton, GBC);
 
         setContentPane(MainPanelLS);
@@ -153,7 +155,7 @@ public class Login_MainMenu_Gui extends JFrame implements ActionListener {
         GBC.insets = new Insets(10, 10, 10, 0);
 
         //Button to open patient window
-        String ImagePathPW = "Images\\dentalpatient.png";
+        String ImagePathPW = "Images/dentalpatient.png";
         ImageIcon PatientIconPW = new ImageIcon(ImagePathPW);
         JPanel PatientPanelMM = new JPanel(new BorderLayout());
         PatientPanelMM.setPreferredSize(buttonPanelSize);
@@ -170,7 +172,7 @@ public class Login_MainMenu_Gui extends JFrame implements ActionListener {
 
         //Button to open appointment window
         GBC.gridy++;
-        String ImagePathAW = "Images\\appointment.jpg";
+        String ImagePathAW = "Images/appointment.jpg";
         ImageIcon AppointmentIconAW = new ImageIcon(ImagePathAW);
         JPanel AppointmentPanelMM = new JPanel(new BorderLayout());
         AppointmentPanelMM.setPreferredSize(buttonPanelSize);
@@ -189,7 +191,7 @@ public class Login_MainMenu_Gui extends JFrame implements ActionListener {
         GBC.gridy++;
         GBC.gridx = 1;
         GBC.gridy = 2;
-        String ImagePathBW = "Images\\billing.png";
+        String ImagePathBW = "Images/billing.png";
         ImageIcon BillIconBW = new ImageIcon(ImagePathBW);
         JPanel BillPanelMM = new JPanel(new BorderLayout());
         BillPanelMM.setPreferredSize(buttonPanelSize);
@@ -208,7 +210,7 @@ public class Login_MainMenu_Gui extends JFrame implements ActionListener {
         GBC.gridy++;
         GBC.gridx = 1;
         GBC.gridy = 3;
-        String ImagePathPreW = "Images\\prescription.png";
+        String ImagePathPreW = "Images/prescription.png";
         ImageIcon PrescriptionIconBW = new ImageIcon(ImagePathPreW);
         JPanel PrescriptionPanelMM = new JPanel(new BorderLayout());
         PrescriptionPanelMM.setPreferredSize(buttonPanelSize);
@@ -237,6 +239,8 @@ public class Login_MainMenu_Gui extends JFrame implements ActionListener {
         MainPanelMM.add(LogoutButton, GBC);
         LogoutButton.setBackground(Color.BLUE);
         LogoutButton.setForeground(Color.WHITE);
+        LogoutButton.setBorderPainted(false);
+        LogoutButton.setOpaque(true);
 
         setContentPane(MainPanelMM);
         pack();
@@ -251,6 +255,7 @@ public class Login_MainMenu_Gui extends JFrame implements ActionListener {
                 setSize(550, 600);
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid username or password", "Login Failed", JOptionPane.ERROR_MESSAGE);
+                PasswordField.setText("");
             }
 
     //Show loading screen and open patient window

@@ -65,34 +65,78 @@ public class Appointment_Window {
     
     //Code that saves appointment info when save button is used in AppointmentWindow
     public static void SaveAppointmentInfo(JTextField[] Fields, DefaultTableModel TableModel, JFrame ParentFrame) {
-
-        // Check for empty fields, non-numeric inputs, incorrect time format, and incorrect date format.
-        for (int i = 0; i < 9; i++) {
-            if (i != 5 && i != 6 && Fields[i].getText().isEmpty()) {
-                JOptionPane.showMessageDialog(ParentFrame, "Make sure to fill out all fields correctly.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            if ((i == 7 && !Patient_Window.ValidDate(Fields[i].getText())) ||
-                    (i == 8 && !Patient_Window.ValidTime(Fields[i].getText()))) {
-                JOptionPane.showMessageDialog(ParentFrame, "Make sure to fill out all fields correctly with the correct format.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        }
-
-        //Inserts info typed into AppointmentWindow into the database.
         try {
             Connection connection = ConnectDB.getConnection();
     
-            String sql = "INSERT INTO appointment (patient_id, procedure_id, procedure_occurrences, dentist_id, dental_hygienist_id,"+
-                         "dental_assistant_id, dental_surgeon_id, appointment_date, appointment_time, notes, canceled) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            // Check for empty fields, non-numeric inputs, incorrect time format, and incorrect date format.
+            for (int i = 0; i < 9; i++) {
+                if (i != 5 && i != 6 && Fields[i].getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(ParentFrame, "Make sure to fill out all fields correctly.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                if ((i == 7 && !Patient_Window.ValidDate(Fields[i].getText())) ||
+                        (i == 8 && !Patient_Window.ValidTime(Fields[i].getText()))) {
+                    JOptionPane.showMessageDialog(ParentFrame, "Make sure to fill out all fields correctly with the correct format.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+    
+            // Check if there's a 30-minute gap between appointments for dental workers.
+            LocalTime newAppointmentTime = LocalTime.parse(Fields[8].getText(), DateTimeFormatter.ofPattern("HH:mm"));
+            java.sql.Date newAppointmentDate = java.sql.Date.valueOf(Fields[7].getText());
+    
+            // Calculate the time 30 minutes before the new appointment.
+            LocalTime thirtyMinutesBefore = newAppointmentTime.minusMinutes(29);
+            Time thirtyMinutesBeforeTime = Time.valueOf(thirtyMinutesBefore);
+    
+            // Calculate the time 30 minutes after the new appointment.
+            LocalTime thirtyMinutesAfter = newAppointmentTime.plusMinutes(29);
+            Time thirtyMinutesAfterTime = Time.valueOf(thirtyMinutesAfter);
+    
+            String sqlOverlapCheck = "SELECT COUNT(*) FROM appointment WHERE appointment_date = ? AND " +
+                     "(dentist_id = ? OR dental_hygienist_id = ? OR dental_assistant_id = ? OR dental_surgeon_id = ?) AND " +
+                     "((appointment_time >= ? AND appointment_time <= ?) OR (appointment_time <= ? AND appointment_time >= ?))";
+            PreparedStatement statementOverlapCheck = connection.prepareStatement(sqlOverlapCheck);
+    
+            statementOverlapCheck.setDate(1, newAppointmentDate);
+            statementOverlapCheck.setInt(2, Integer.parseInt(Fields[3].getText()));
+            statementOverlapCheck.setInt(3, Integer.parseInt(Fields[4].getText())); 
+            if (Fields[5].getText().isEmpty()) {
+                statementOverlapCheck.setNull(4, java.sql.Types.INTEGER);
+            } else {
+                statementOverlapCheck.setInt(4, Integer.parseInt(Fields[5].getText())); 
+            }
+            if (Fields[6].getText().isEmpty()) {
+                statementOverlapCheck.setNull(5, java.sql.Types.INTEGER);
+            } else {
+                statementOverlapCheck.setInt(5, Integer.parseInt(Fields[6].getText())); 
+            }
+            statementOverlapCheck.setTime(6, thirtyMinutesBeforeTime);
+            statementOverlapCheck.setTime(7, thirtyMinutesAfterTime);
+            statementOverlapCheck.setTime(8, thirtyMinutesBeforeTime);
+            statementOverlapCheck.setTime(9, thirtyMinutesAfterTime);
+    
+            ResultSet resultSetOverlapCheck = statementOverlapCheck.executeQuery();
+            resultSetOverlapCheck.next();
+            int count = resultSetOverlapCheck.getInt(1);
+    
+            if (count != 0) {
+                JOptionPane.showMessageDialog(ParentFrame, "There must be at least 30 minutes between appointments for dental workers.", "Dental Worker Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            //Inserts info typed into AppointmentWindow into the database.
 
+            String sql = "INSERT INTO appointment (patient_id, procedure_id, procedure_occurrences, dentist_id, dental_hygienist_id," +
+                         "dental_assistant_id, dental_surgeon_id, appointment_date, appointment_time, notes, canceled) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            
             //convert inputs to match database column data types and excludes some fields needed
             PreparedStatement statement = connection.prepareStatement(sql);
             for (int i = 0; i < Fields.length - 1; i++) {
                 if (i == 0 || i == 1 || i == 2 || i == 3 || i == 4) {
                     int FieldValue = Integer.parseInt(Fields[i].getText());
                     statement.setInt(i + 1, FieldValue);
-                } else if ((i == 5 || i == 6)) { 
+                } else if ((i == 5 || i == 6)) {
                     if (Fields[i].getText().isEmpty()) {
                         statement.setNull(i + 1, java.sql.Types.INTEGER);
                     } else {
@@ -113,13 +157,13 @@ public class Appointment_Window {
                     statement.setString(i + 1, Fields[i].getText());
                 }
             }
-            
+    
             statement.executeUpdate();
             connection.close();
             JOptionPane.showMessageDialog(ParentFrame, "Appointment information saved successfully.");
             PopulateAppointmentTable(TableModel, ParentFrame);
             Patient_Window.ClearFields(Fields);
-
+    
         } catch (SQLException e) {
             if (e.getMessage().contains("violates foreign key constraint \"appointment_patient_id_fkey\"")) {
                 JOptionPane.showMessageDialog(ParentFrame, "The specified Patient ID does not exist.", "Patient ID Error", JOptionPane.ERROR_MESSAGE);
@@ -140,11 +184,11 @@ public class Appointment_Window {
                 JOptionPane.showMessageDialog(ParentFrame, "The specified Dental Surgeon ID does not exist.", "Dental Surgeon ID Error", JOptionPane.ERROR_MESSAGE);
             } 
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(ParentFrame, "Fields Patient ID, Procedure ID, Procedure Occurrences, Dentist ID, Dental Hygienist ID, "+ 
+            JOptionPane.showMessageDialog(ParentFrame, "Fields Patient ID, Procedure ID, Procedure Occurrences, Dentist ID, Dental Hygienist ID, " +
                                             "Dental Assistant ID, Dental Surgeon ID must be integers.", "Error", JOptionPane.ERROR_MESSAGE);
         }
-        
     }
+
     
     //Code deletes patient information in the database. Is used in AppointmentWindow
     public static void DeleteAppointment(String AppointmentID, DefaultTableModel TableModel, JTextField[] Fields, JFrame ParentFrame) {
@@ -182,7 +226,7 @@ public class Appointment_Window {
             Connection connection = ConnectDB.getConnection();
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("SELECT appointment_id, patient_id, procedure_id, procedure_occurrences, dentist_id,"+
-                                                         "dental_hygienist_id, dental_assistant_id, dental_surgeon_id, appointment_date, appointment_time, notes, canceled FROM appointment ORDER BY appointment_date DESC;");
+                                                         "dental_hygienist_id, dental_assistant_id, dental_surgeon_id, appointment_date, appointment_time, notes, canceled FROM appointment ORDER BY appointment_date DESC, appointment_time DESC;");
     
             while (resultSet.next()) {
                 String[] rowData = {
@@ -375,6 +419,7 @@ public class Appointment_Window {
     public static void HelpAppointment(JFrame frame, JFrame ParentFrame){
         JOptionPane.showMessageDialog(ParentFrame, "To search Appointments only use Patient ID or Appointment ID Fields."+ 
         "\nTo delete Appointment only use Appointment ID field."+ 
+        "\nEnsure dental specialists have a 30 min gap between appointments or appointment cannot be created."+
         "\nEnsure all fields marked with * are filled out. Ensure correct date format for Appointment Date." + 
         "\nEnsure numerical value for all ID fields."+ 
         "\nTo mark appointment as canceled only use Appointment ID and Canceled fields. Type 'true' in Canceled field to cancel appointment." + 

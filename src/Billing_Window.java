@@ -2,6 +2,13 @@ package src;
 //Created by Deontae Cocroft
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
+
+import java.io.File;
 import java.sql.*;
 
 //logic for Billing window GUI
@@ -211,12 +218,134 @@ public class Billing_Window {
             JOptionPane.showMessageDialog(ParentFrame, "Error occurred while marking is Paid: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+ 
+
+    //code that create pdf for patient bills
+    @SuppressWarnings("resource")
+    public static void searchBillsAndCreatePDF(int billID, JFrame parentFrame) {
+        if (billID < 0) {
+            JOptionPane.showMessageDialog(parentFrame, "Bill ID must be a valid integer.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+    
+        String pdfPath = "Bills/Bill_Report_ID_" + billID + ".pdf"; 
+        String fontPath = "Fonts/Times New Roman.ttf";
+    
+        try (PDDocument document = new PDDocument()) {
+            PDPage page = new PDPage();
+            document.addPage(page);
+    
+            PDType0Font font = PDType0Font.load(document, new File(fontPath));
+    
+            PDPageContentStream contentStream = new PDPageContentStream(document, page);
+    
+            contentStream.setFont(font, 12);
+            contentStream.beginText();
+            contentStream.setLeading(14.5f);
+            contentStream.newLineAtOffset(25, 750);
+            contentStream.showText("Detailed Bill Report");
+            contentStream.newLine();
+            contentStream.newLine();
+    
+            //Pull information from database.
+            Connection connection = ConnectDB.getConnection();
+            String sql = "SELECT bill.bill_id, bill.appointment_id, bill.notes, bill.is_paid, " +
+                        "appointment.procedure_occurrences, appointment.procedure_id, procedure.price, " +
+                        "(appointment.procedure_occurrences * procedure.price) AS total, " +
+                        "patient.patient_id, patient.first_name, patient.last_name, " +
+                        "patient.date_of_birth, patient.gender, patient.address, " +
+                        "patient.city, patient.state, patient.zip_code, " +
+                        "patient.insurance_company, patient.insurance_number, " +
+                        "procedure.name, (procedure.notes) AS procedure_notes " +
+                        "FROM bill " +
+                        "INNER JOIN appointment ON bill.appointment_id = appointment.appointment_id " +
+                        "INNER JOIN procedure ON appointment.procedure_id = procedure.procedure_id " +
+                        "INNER JOIN patient ON appointment.patient_id = patient.patient_id " +
+                        "WHERE bill.bill_id = ? " +
+                        "ORDER BY bill.bill_id DESC";
+    
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, billID);
+            ResultSet resultSet = statement.executeQuery();
+    
+            if (!resultSet.next()) {
+                JOptionPane.showMessageDialog(parentFrame, "Bill ID " + billID + " not found.", "Bill ID Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            //copy database information into content stream
+            do {
+                contentStream.showText("Bill Number: " + resultSet.getInt("bill_id"));
+                contentStream.newLine();
+                contentStream.showText("Appointment Number: " + resultSet.getInt("appointment_id"));
+                contentStream.newLine();
+                contentStream.showText("Notes: " + resultSet.getString("notes"));
+                contentStream.newLine();
+                contentStream.showText("Is Paid: " + (resultSet.getBoolean("is_paid") ? "Yes" : "No"));
+                contentStream.newLine();
+                contentStream.newLine();
+                contentStream.showText("Procedure: " + resultSet.getString("name"));
+                contentStream.newLine();
+                contentStream.showText("Procedure Notes: " + resultSet.getString("procedure_notes"));
+                contentStream.newLine();
+                contentStream.showText("Price: " + resultSet.getDouble("price"));
+                contentStream.showText(" | Occurrences: " + resultSet.getInt("procedure_occurrences"));
+                contentStream.showText(" | Total: " + resultSet.getDouble("total"));
+                contentStream.newLine();
+                contentStream.newLine();
+                contentStream.newLine();
+                contentStream.showText("Patient Number: " + resultSet.getInt("patient_id"));
+                contentStream.showText(" | Patient First Name: " + resultSet.getString("first_name") + " | Patient Last Name: " + resultSet.getString("last_name"));
+                contentStream.showText(" | DOB: " + resultSet.getString("date_of_birth"));
+                contentStream.showText(" | Gender: " + resultSet.getString("gender"));
+                contentStream.newLine();
+                contentStream.showText("Address: " + resultSet.getString("address"));
+                contentStream.showText(" | City: " + resultSet.getString("city"));
+                contentStream.showText(" | State: " + resultSet.getString("state"));
+                contentStream.showText(" | Zip Code: " + resultSet.getString("zip_code"));
+                contentStream.newLine();
+                contentStream.newLine();
+                contentStream.showText("Insurance Company: " + resultSet.getString("insurance_company"));
+                contentStream.showText(" | Insurance Policy Number: " + resultSet.getString("insurance_number"));
+                contentStream.newLine();
+                contentStream.newLine();
+                contentStream.newLine();
+                contentStream.newLine();
+                contentStream.showText("Print Name: _____________________________________________________");
+                contentStream.newLine();
+                contentStream.newLine();
+                contentStream.showText("Sign Name: _____________________________________________________");
+                contentStream.newLine();
+                contentStream.newLine();
+                contentStream.showText("Date: ________________________________");
+    
+            } while (resultSet.next());
+    
+             //convert content stream to pdf and save
+            contentStream.endText();
+            contentStream.close();
+            resultSet.close();
+            statement.close();
+            connection.close();
+    
+            document.save(pdfPath);
+            document.close();
+            
+    
+            JOptionPane.showMessageDialog(parentFrame, "PDF created successfully at " + pdfPath, "Success", JOptionPane.INFORMATION_MESSAGE);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(parentFrame, "Error occurred: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
     //Code that displays help message in Bill Window 
     public static void HelpBilling(JFrame frame, JFrame ParentFrame){
         JOptionPane.showMessageDialog(ParentFrame, "To search Appointments only use Bill ID."+ 
         "\nEnsure all fields marked with * are filled out." + 
         "\nEnsure numerical value for all ID fields."+ 
+        "\n To create bill pdf only fill out Bill ID field. "+
         "\nTo mark bill as paid only use Bill ID and Is Paid fields. Type 'true' in Is Paid field to mark bill as paid." + 
         " Type 'false' to mark as unpaid.", "Bill Help Window", JOptionPane.INFORMATION_MESSAGE);
     }

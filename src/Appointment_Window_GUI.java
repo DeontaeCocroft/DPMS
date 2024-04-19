@@ -28,7 +28,7 @@ public class Appointment_Window_GUI {
         });
         
         //Appointment window Icon
-        ImageIcon LogoIcon = new ImageIcon("Images\\appointment.jpg"); 
+        ImageIcon LogoIcon = new ImageIcon("Images/appointment.jpg"); 
         AppointmentWindow.setIconImage(LogoIcon.getImage());
         
         // Size of window
@@ -67,7 +67,7 @@ public class Appointment_Window_GUI {
 
         //Table to display Dental Assistant information
         DefaultTableModel TableModelDA = new DefaultTableModel();
-        TableModelDA.addColumn("DentalAssistant ID");
+        TableModelDA.addColumn("Dental Assistant ID");
         TableModelDA.addColumn("First Name");
         TableModelDA.addColumn("Last Name");
         TableModelDA.addColumn("Phone Number");
@@ -177,6 +177,8 @@ public class Appointment_Window_GUI {
         ButtonPanelAW.add(saveButton);
         saveButton.setBackground(Color.BLUE);
         saveButton.setForeground(Color.WHITE);
+        saveButton.setBorderPainted(false);
+        saveButton.setOpaque(true);
     
         //Button to clear appointment info fields 
         JButton ClearButtonAW = new JButton("Clear Fields");
@@ -189,6 +191,9 @@ public class Appointment_Window_GUI {
         ButtonPanelAW.add(ClearButtonAW);
         ClearButtonAW.setBackground(Color.BLUE);
         ClearButtonAW.setForeground(Color.WHITE);
+        ClearButtonAW.setBorderPainted(false);
+        ClearButtonAW.setOpaque(true);
+
 
         //Button to delete appointments from the database
         JButton DeleteButtonAW = new JButton("Delete");
@@ -202,6 +207,25 @@ public class Appointment_Window_GUI {
         ButtonPanelAW.add(DeleteButtonAW);
         DeleteButtonAW.setBackground(Color.BLUE);
         DeleteButtonAW.setForeground(Color.WHITE);
+        DeleteButtonAW.setBorderPainted(false);
+        DeleteButtonAW.setOpaque(true);
+
+        //Button to search patients
+        JButton SearchButtonAW = new JButton("Search");
+        SearchButtonAW.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e){
+                Appointment_Window.SearchAppointments(TableModelAI, Fields, AppointmentWindow);
+            }
+            
+        });
+        ButtonPanelAW.add((SearchButtonAW));
+        SearchButtonAW.setBackground(Color.BLUE);
+        SearchButtonAW.setForeground(Color.WHITE);
+        SearchButtonAW.setBorderPainted(false);
+        SearchButtonAW.setOpaque(true);
+
+
 
         //Button to patients window
         JButton PatientButtonAW = new JButton("Patients");
@@ -231,19 +255,8 @@ public class Appointment_Window_GUI {
         ButtonPanelAW.add((PatientButtonAW));
         PatientButtonAW.setBackground(Color.BLUE);
         PatientButtonAW.setForeground(Color.WHITE);
-
-        //Button to search patients
-        JButton SearchButtonAW = new JButton("Search");
-        SearchButtonAW.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e){
-                Appointment_Window.SearchAppointments(TableModelAI, Fields, AppointmentWindow);
-            }
-            
-        });
-        ButtonPanelAW.add((SearchButtonAW));
-        SearchButtonAW.setBackground(Color.BLUE);
-        SearchButtonAW.setForeground(Color.WHITE);
+        PatientButtonAW.setBorderPainted(false);
+        PatientButtonAW.setOpaque(true);
 
         //Button to mark patient appointment as canceled or not canceled
         JButton CancelButtonAW = new JButton("Cancel Appointment");
@@ -257,7 +270,10 @@ public class Appointment_Window_GUI {
         ButtonPanelAW.add((CancelButtonAW));
         CancelButtonAW.setBackground(Color.BLUE);
         CancelButtonAW.setForeground(Color.WHITE);
+        CancelButtonAW.setBorderPainted(false);
+        CancelButtonAW.setOpaque(true);
 
+    
         //Button for patient window help
         JButton HelpButtonAW = new JButton("Help");
         HelpButtonAW.addActionListener(new ActionListener() {
@@ -269,6 +285,8 @@ public class Appointment_Window_GUI {
         ButtonPanelAW.add(HelpButtonAW);
         HelpButtonAW.setBackground(Color.BLUE);
         HelpButtonAW.setForeground(Color.WHITE);
+        HelpButtonAW.setBorderPainted(false);
+        HelpButtonAW.setOpaque(true);
 
         MainPanelAW.add(ButtonPanelAW, BorderLayout.SOUTH);
         AppointmentWindow.add(MainPanelAW);
