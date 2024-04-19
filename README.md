@@ -19,6 +19,8 @@ Patients:
   fields are filled incorrectly or missing, an error will display. If everything is correct, the patient will be added to the database when the save button is clicked.
   
  - The Clear fields button just clears all fields in the window.
+   
+ - Update button allows user to enter Patient ID and edit any information the patient has.
   
  - Delete allows the user to delete a patient from the database using their Patient ID. If an int isn't entered or the field is blank when the delete button is pressed, an error will occur. Also, the delete button has a confirmation to prevent accidents.
   
@@ -53,6 +55,8 @@ Billing:
  - Search uses Bill ID or Appointment ID to find a Bill in the database. Nulls are accepted here, but the two fields must be an int. If it isn't, an error message will trigger.
   
  - The appointment button simply pops up the appointment window in case a user needs to find a specific appointment for billing.
+   
+ - The Save Bill PDF button takes the information from the Bill ID field and turns the bill into a pdf.
   
  - Help button provides information on how to fill out fields.
   
@@ -69,6 +73,8 @@ Prescription & Prescription Billing:
  - Search uses Prescription Bill ID or Patient ID to find a Prescription Bill in the database. Nulls are accepted here, but the two fields must be an int. If it isn't, an error message will trigger.
   
  - Patients Button simply pops up the patient window in case a user needs to find a patient while creating a prescription bill.
+   
+ - The Save Bill PDF button takes the information from the Prescription Bill ID field and turns the bill into a pdf.
   
  - Help button provides information on how to fill out fields.
   
