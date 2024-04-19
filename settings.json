@@ -2,9 +2,14 @@
 {
     "java.project.referencedLibraries": [
         "C:\\Users\\dcocr\\Desktop\\DPMS\\lib\\postgresql-42.7.1.jar",
-        "/Users/tae/Desktop/DPMS/lib/postgresql-42.7.1.jar"
+        "C:\\Users\\dcocr\\Desktop\\DPMS\\lib\\pdfbox-app-3.0.2.jar",
+        "/Users/tae/Desktop/DPMS/lib/postgresql-42.7.1.jar",
+        "/Users/tae/Desktop/DPMS/lib/pdfbox-app-3.0.2.jar"
     ],
-    "java.debug.settings.onBuildFailureProceed": true
+    "java.debug.settings.onBuildFailureProceed": true,
+    "cSpell.words": [
+        "pdfbillbutton"
+    ]
 }
 
 
