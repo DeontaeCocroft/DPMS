@@ -11,8 +11,7 @@ public class ConnectDB{
 		Connection connection = null;
 		try {
 			Class.forName("org.postgresql.Driver");
-			//connection = DriverManager.getConnection("jdbc:postgresql://project-database.cx0s8y2ymcyy.us-east-2.rds.amazonaws.com/DPMS", "Taec_3", "Char8305030802$");
-			connection = DriverManager.getConnection("jdbc:postgresql://localhost/test", "postgres", "Char8305");
+			connection = DriverManager.getConnection("jdbc:postgresql://project-database.cx0s8y2ymcyy.us-east-2.rds.amazonaws.com/?", "?", "?");
 
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
