@@ -18,16 +18,16 @@ public class Patient_Window{
     public static void SavePatientInfo(JTextField[] Fields, DefaultTableModel TableModelPI, JFrame ParentFrame) {
         // Check for empty fields, non-numeric inputs, and incorrect date format.
         for (int i = 0; i < Fields.length; i++) {
-            if (i != 10 && i != 11 && Fields[i].getText().isEmpty()) {
+            if (i != 11 && i != 12 && Fields[i].getText().isEmpty()) {
                 JOptionPane.showMessageDialog(ParentFrame, "Make sure to fill out all fields correctly and enter numbers" +
-                                                            " for zip code, and insurance number.", "Error", JOptionPane.ERROR_MESSAGE);
+                                                            " for zip code, insurance number, and phone number.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
     
             if ((i == 2 && !ValidDate(Fields[i].getText())) || 
-                    (i == 7 || i == 9) && !Numeric(Fields[i].getText())) {
+                    (i == 7 || i == 9 || i == 10) && !Numeric(Fields[i].getText())) {
                 JOptionPane.showMessageDialog(ParentFrame, "Make sure to fill out all fields correctly and" + 
-                                            " enter numbers for zip code and insurance number.", "Error", JOptionPane.ERROR_MESSAGE);
+                                            " enter numbers for zip code, insurance number, and phone number.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
         }
@@ -37,7 +37,7 @@ public class Patient_Window{
             Connection connection = ConnectDB.getConnection();
     
             String sql = "INSERT INTO patient (first_name, last_name, date_of_birth, gender, address, city, state, zip_code,"+
-                            "insurance_company, insurance_number, xray_images) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                            "insurance_company, insurance_number, phone_number, xray_images) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             
             // Convert inputs to match database column data types and exclude some fields needed.
             PreparedStatement statement = connection.prepareStatement(sql);
@@ -47,7 +47,7 @@ public class Patient_Window{
                     java.sql.Date dobDate = java.sql.Date.valueOf(Fields[i].getText());
                     statement.setDate(i + 1, dobDate); 
     
-                } else if (i == 7 || i == 9) {
+                } else if (i == 7 || i == 9 || i == 10) {
                     statement.setLong(i + 1, Long.parseLong(Fields[i].getText()));
                 } else {
                     statement.setString(i + 1, Fields[i].getText());
@@ -70,6 +70,15 @@ public class Patient_Window{
     //code that allows users to update any patient information
     public static void UpdatePatientInfo(JTextField[] Fields, DefaultTableModel TableModelPI, JFrame ParentFrame, String PatientID) {
         // Check if the Patient ID is numeric
+        for (int i = 0; i < Fields.length; i++) {
+            if ((i == 2 && !Fields[i].getText().isEmpty() && !ValidDate(Fields[i].getText())) || 
+                    ((i == 7 || i == 9 || i == 10) && !Fields[i].getText().isEmpty() && !Numeric(Fields[i].getText()))) {
+                JOptionPane.showMessageDialog(ParentFrame, "Make sure to fill out all fields correctly and" + 
+                                            " enter numbers for zip code, insurance number, and phone number.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+
         if (!Numeric(PatientID)) {
             JOptionPane.showMessageDialog(ParentFrame, "Patient ID must be a valid integer.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
@@ -86,7 +95,7 @@ public class Patient_Window{
         try (Connection connection = ConnectDB.getConnection()) {
             StringBuilder sql = new StringBuilder("UPDATE patient SET ");
             List<Object> parameters = new ArrayList<>();
-            String[] fieldNames = {"first_name", "last_name", "date_of_birth", "gender", "address", "city", "state", "zip_code", "insurance_company", "insurance_number", "xray_images"};
+            String[] fieldNames = {"first_name", "last_name", "date_of_birth", "gender", "address", "city", "state", "zip_code", "insurance_company", "insurance_number", "phone_number", "xray_images"};
             
             boolean first = true;
             for (int i = 0; i < Fields.length - 1; i++) {
@@ -98,7 +107,7 @@ public class Patient_Window{
                     first = false;
                     if (i == 2 && ValidDate(Fields[i].getText())) {
                         parameters.add(java.sql.Date.valueOf(Fields[i].getText()));
-                    } else if ((i == 7 || i == 9) && Numeric(Fields[i].getText())) {
+                    } else if ((i == 7 || i == 9 || i == 10) && Numeric(Fields[i].getText())) {
                         parameters.add(Long.parseLong(Fields[i].getText()));
                     } else {
                         parameters.add(Fields[i].getText());
@@ -180,7 +189,7 @@ public class Patient_Window{
     
         String FirstName = Fields[0].getText();
         String LastName = Fields[1].getText();
-        String PatientIDText = Fields[11].getText();
+        String PatientIDText = Fields[12].getText();
     
         // Validate patientID using the Numeric function
         int patientID = -1;
@@ -205,8 +214,8 @@ public class Patient_Window{
             ResultSet resultSet = statement.executeQuery();
     
             while (resultSet.next()) {
-                Object[] RowData = new Object[11];
-                for (int i = 1; i <= 11; i++) {
+                Object[] RowData = new Object[12];
+                for (int i = 1; i <= 12; i++) {
                     RowData[i - 1] = resultSet.getObject(i);
                 }
                 TableModelSP.addRow(RowData);
@@ -227,7 +236,7 @@ public class Patient_Window{
             Connection connection = ConnectDB.getConnection();
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("SELECT patient_id, first_name, last_name, date_of_birth, gender, address,"+
-                                             "city, state, zip_code, insurance_company, insurance_number, xray_images FROM patient ORDER BY last_name ASC");
+                                             "city, state, zip_code, insurance_company, insurance_number, phone_number, xray_images FROM patient ORDER BY last_name ASC");
 
             while (resultSet.next()) {
                 String[] RowData = {
@@ -242,7 +251,8 @@ public class Patient_Window{
                         String.valueOf(resultSet.getLong(9)),
                         resultSet.getString(10),
                         String.valueOf(resultSet.getLong(11)),
-                        resultSet.getString(12)
+                        String.valueOf(resultSet.getLong(12)),
+                        resultSet.getString(13)
                 };
                 TableModelPPT.addRow(RowData);
             }
@@ -260,7 +270,7 @@ public class Patient_Window{
         "\nTo delete Patients only use Patient ID field."+ 
         "\nClick Xray Image link next to patient to view xray images"+
         "\nTo update patient information type Patient ID and put data into fields that need to be changed."+
-        "\nEnsure all fields marked with * are filled out. Ensure correct date format for patient DOB and numerical value for Zip Code, Insurance Number, and Patient ID."+ 
+        "\nEnsure all fields marked with * are filled out. Ensure correct date format for patient DOB and numerical value for Zip Code, Insurance Number, Phone Number, and Patient ID."+ 
         "\nEnsure state field is an abbreviation for the state. EX: Illinois = IL.", "Patient Help Window", JOptionPane.INFORMATION_MESSAGE);
     }
 

@@ -36,7 +36,7 @@ public class Patient_Window_GUI {
         PatientWindow.setIconImage(LogoIcon.getImage());
 
         // Size of window
-        PatientWindow.setSize(1650, 600);
+        PatientWindow.setSize(1700, 600);
         PatientWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         PatientWindow.setLocationRelativeTo(null);
 
@@ -55,6 +55,7 @@ public class Patient_Window_GUI {
         TableModelPI.addColumn("Zip Code");
         TableModelPI.addColumn("Insurance");
         TableModelPI.addColumn("Insurance Number");
+        TableModelPI.addColumn("Phone Number");
         TableModelPI.addColumn("Xray Images");
 
         // Populate table with data from database
@@ -66,7 +67,7 @@ public class Patient_Window_GUI {
         JTable PatientTable = new JTable(TableModelPI) {
             @Override
             public Class<?> getColumnClass(int columnIndex) {
-                return columnIndex == 11 ? URI.class : super.getColumnClass(columnIndex);
+                return columnIndex == 12 ? URI.class : super.getColumnClass(columnIndex);
             }
         };
 
@@ -75,7 +76,7 @@ public class Patient_Window_GUI {
             public void mouseClicked(MouseEvent e) {
                 int row = PatientTable.rowAtPoint(e.getPoint());
                 int col = PatientTable.columnAtPoint(e.getPoint());
-                if (col == 11 && e.getClickCount() == 1) { 
+                if (col == 12 && e.getClickCount() == 1) { 
                     try {
                         URI uri = new URI((String) PatientTable.getValueAt(row, col));
                         Desktop.getDesktop().browse(uri);
@@ -97,7 +98,7 @@ public class Patient_Window_GUI {
         gbc.insets = new Insets(5, 5, 5, 10);
 
         String[] Labels = {"*First Name (For Search or Save):", "*Last Name (For Search or Save):", "*DOB (YYYY-MM-DD):", "*Gender:", "*Address:", "*City:", "*State:",
-                "*Zip Code:", "*Insurance:", "*Insurance Number:", "Xray Images Link: ",  "Patient ID (For Search, Update, or Delete):"};
+                "*Zip Code:", "*Insurance:", "*Insurance Number:", "*Phone Number: ", "Xray Images Link: ", "Patient ID (For Search, Update, or Delete):"};
         JTextField[] Fields = new JTextField[Labels.length];
 
         for (int i = 0; i < Labels.length; i++) {
@@ -152,7 +153,7 @@ public class Patient_Window_GUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // We get the Patient ID from the Fields array, index 10, assuming this holds the Patient ID
-                String patientID = Fields[11].getText();
+                String patientID = Fields[12].getText();
                 if (patientID != null && !patientID.isEmpty()) {
                     Patient_Window.UpdatePatientInfo(Fields, TableModelPI, PatientWindow, patientID);
                 } else {
@@ -171,7 +172,7 @@ public class Patient_Window_GUI {
         DeleteButtonPW.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Patient_Window.DeletePatient(Fields[11].getText(), TableModelPI, Fields, PatientWindow);
+                Patient_Window.DeletePatient(Fields[12].getText(), TableModelPI, Fields, PatientWindow);
             }
         });
         ButtonPanelPW.add(DeleteButtonPW);
